@@ -1,38 +1,103 @@
+// server.js
 const express = require('express');
 const http = require('http');
 const WebSocket = require('ws');
+const { v4: uuidv4 } = require('uuid'); // Import the uuid package
+
+const ipBlackList=[/*Ipv4 here*/]
 
 const app = express();
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
-let tagData = {}; // { tag: [ { user: 'name', data: 'info' }, ... ] }
+Array.prototype.remove = function(a) {
+    const i = this.indexOf(a);
+    return i !== -1 && this.splice(i, 1);
+};
+
+class Tags {
+    constructor(id, tag, nick, s, x, y,server,ip) {
+        this.id = id
+        this.tag = tag
+        this.nick = nick
+        this.s = s
+        this.x = x
+        this.y = y
+        this.server = server
+        this.ip = ip
+        this.ex = 3
+    }
+}
+const taggers = {
+    byId: new Map(),
+    list: [],
+};
+
+setInterval(() => {
+    for(const cc of taggers.list){
+        if(--cc.ex <= 0){
+            taggers.list.remove(taggers.byId.get(cc.id))
+            taggers.byId.delete(cc.id);
+        }
+    }
+}, 1000);
 
 wss.on('connection', (ws) => {
-    console.log('Client connected');
+    const sessionId1 = uuidv4(); // Generate a unique session ID
+    const sessionId2 = uuidv4(); // Generate a unique session ID
+    ws.send(JSON.stringify({ type: 'sessionId', sessionId1 , sessionId2 }));
+
+    console.log(`Client connected with session ID: ${sessionId1} and ${sessionId2}`);
 
     ws.on('message', (message) => {
         const data = JSON.parse(message);
-        const { type, tag, user, info } = data;
-
-        if (type === 'addTag') {
-            if (!tagData[tag]) tagData[tag] = [];
-            tagData[tag].push({ user, data: info });
-            // Broadcast updated tag info to all clients
-            wss.clients.forEach((client) => {
-                if (client !== ws && client.readyState === WebSocket.OPEN) {
-                    client.send(JSON.stringify({ tag, users: tagData[tag] }));
-                }
-            });
+        const { type, tag, id1, id2, nick,s,x,y,nick2,s2,x2,y2,server,ip } = data;
+        if (type === 'init'){
+            console.log(`Client connected with IP: ${ip}, with nicknames: ${nick} and ${nick2}`);
+            if(ipBlackList.includes(ip))ws.send(JSON.stringify({ type: 'red', link:"https://www.youtube.com/watch?v=dQw4w9WgXcQ" }));
         }
-
-        if (type === 'getTagInfo') {
-            if (tagData[tag]) {
-                ws.send(JSON.stringify({ tag, users: tagData[tag] }));
-            } else {
-                ws.send(JSON.stringify({ tag, users: [] }));
+        if (type === 'core') {
+            if(s&&s>9&&tag!=""){
+                if(taggers.byId.has(id1)){
+                    taggers.byId.get(id1).tag=tag
+                    taggers.byId.get(id1).nick=nick
+                    taggers.byId.get(id1).s=s
+                    taggers.byId.get(id1).x=x
+                    taggers.byId.get(id1).y=y
+                    taggers.byId.get(id1).server=server
+                    taggers.byId.get(id1).ex=3
+                }else{
+                    const cell = new Tags(id1, tag, nick, s, x, y,server,ip);
+                    taggers.byId.set(id1, cell);
+                    taggers.list.push(cell)
+                    console.log(cell)
+                }
+            }
+            if(s2&&s2>9&&tag!=""){
+                if(taggers.byId.has(id2)){
+                    taggers.byId.get(id2).tag=tag
+                    taggers.byId.get(id2).nick=nick2
+                    taggers.byId.get(id2).s=s2
+                    taggers.byId.get(id2).x=x2
+                    taggers.byId.get(id2).y=y2
+                    taggers.byId.get(id2).server=server
+                    taggers.byId.get(id2).ex=3
+                    //console.log(taggers)
+                }else{
+                    const cell = new Tags(id2, tag, nick2, s2, x2, y2,server,ip);
+                    taggers.byId.set(id2, cell);
+                    taggers.list.push(cell)
+                    console.log(cell)
+                }
             }
         }
+    if (type === 'getcore') {
+        if(ipBlackList.includes(ip))ws.send(JSON.stringify({ type: 'red', link:"https://www.youtube.com/watch?v=dQw4w9WgXcQ" }));
+        for(const cell of taggers.list){
+            if(tag==cell.tag&&server==cell.server)
+            ws.send(JSON.stringify({tag:cell.tag,id:cell.id, nick:cell.nick,s:cell.s,x:cell.x,y:cell.y}));
+        }
+    }
     });
 
     ws.on('close', () => {
@@ -43,4 +108,3 @@ wss.on('connection', (ws) => {
 server.listen(30180, () => {
     console.log('Server is listening on port 30180');
 });
-//uwu.freeserver.tw:21249
