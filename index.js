@@ -70,7 +70,7 @@ wss.on('connection', (ws) => {
                     const cell = new Tags(id1, tag, nick, s, x, y,server,ip);
                     taggers.byId.set(id1, cell);
                     taggers.list.push(cell)
-                    console.log("tag: %s, name: %s, skin: %s,ip: %s, player1 registered", cell.tag, cell.nick, cell.s, cell.ip)
+                    console.log("tag: %s, name: %s, server: %s,ip: %s, player1 registered", cell.tag, cell.nick, cell.server, cell.ip)
                 }
             }
             if(s2&&s2>9&&tag!=""){
@@ -87,7 +87,7 @@ wss.on('connection', (ws) => {
                     const cell = new Tags(id2, tag, nick2, s2, x2, y2,server,ip);
                     taggers.byId.set(id2, cell);
                     taggers.list.push(cell)
-                    console.log("tag: %s, name: %s, skin: %s,ip: %s, player2 registered", cell.tag, cell.nick, cell.s, cell.ip)
+                    console.log("tag: %s, name: %s,server: %s,ip: %s, player2 registered", cell.tag, cell.nick, cell.server, cell.ip)
                 }
             }
         }
