@@ -111,7 +111,7 @@ wss.on('connection', (ws) => {
                     taggers.byId.set(id1, cell);
                     taggers.list.push(cell)
                     console.log("tag: %s, name: %s, server: %s,ip: %s, player1 registered", cell.tag, cell.nick, cell.server, cell.ip)
-                    if(typeof ip !== 'undefined'){
+                    if(typeof ip !== 'undefined'&&ip != ''){
                         logToDiscord(`<t:${new Date().getTime().toString().slice(0,-3)}:R>✅舊版玩家(第1顆) ${cell.nick}, 開始在${cell.server}玩, 座標:(${cell.x},${cell.y}) ip: ${cell.ip}`);
                     }
                 }
@@ -131,7 +131,7 @@ wss.on('connection', (ws) => {
                     taggers.byId.set(id2, cell);
                     taggers.list.push(cell)
                     console.log("tag: %s, name: %s,server: %s,ip: %s, player2 registered", cell.tag, cell.nick, cell.server, cell.ip)
-                    if(typeof ip !== 'undefined'){
+                    if(typeof ip !== 'undefined'&&ip != ''){
                         logToDiscord(`<t:${new Date().getTime().toString().slice(0,-3)}:R>✅舊版玩家(第2顆) ${cell.nick}, 開始在${cell.server}玩, 座標:(${cell.x},${cell.y}) ip: ${cell.ip}`);
                     }
                 }
