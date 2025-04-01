@@ -68,6 +68,7 @@ setInterval(() => {
 wss.on('connection', (ws) => {
     const sessionId1 = uuidv4(); // Generate a unique session ID
     const sessionId2 = uuidv4(); // Generate a unique session ID
+    let sessionip;
     ws.send(JSON.stringify({ type: 'sessionId', sessionId1 , sessionId2 }));
 
     console.log(`Client connected with session ID: ${sessionId1} and ${sessionId2}`);
@@ -76,7 +77,8 @@ wss.on('connection', (ws) => {
         const data = JSON.parse(message);
         const { type, tag, id1, id2, nick,s,x,y,nick2,s2,x2,y2,server,ip } = data;
         if (type === 'init'){
-            if(ip!="undefined"){
+            if(typeof ip !== 'undefined'){
+                sessionip=ip
                 logToDiscord(`<t:${new Date().getTime().toString().slice(0,-3)}:R>✨舊版玩家(${ip})已連接伺服器 暱稱: "${nick}" and "${nick2}"`);
             }
             console.log(`Client connected with IP: ${ip}, with nicknames: ${nick} and ${nick2}`);
@@ -97,7 +99,7 @@ wss.on('connection', (ws) => {
                     taggers.byId.set(id1, cell);
                     taggers.list.push(cell)
                     console.log("tag: %s, name: %s, server: %s,ip: %s, player1 registered", cell.tag, cell.nick, cell.server, cell.ip)
-                    if(cell.ip){
+                    if(typeof cell.ip !== 'undefined'){
                         logToDiscord(`<t:${new Date().getTime().toString().slice(0,-3)}:R>✅舊版玩家(第1顆) ${cell.nick}, 開始在${cell.server}玩, 座標:(${cell.x},${cell.y}) ip: ${cell.ip}`);
                     }
                 }
@@ -117,7 +119,7 @@ wss.on('connection', (ws) => {
                     taggers.byId.set(id2, cell);
                     taggers.list.push(cell)
                     console.log("tag: %s, name: %s,server: %s,ip: %s, player2 registered", cell.tag, cell.nick, cell.server, cell.ip)
-                    if(cell.ip){
+                    if(typeof cell.ip !== 'undefined'){
                         logToDiscord(`<t:${new Date().getTime().toString().slice(0,-3)}:R>✅舊版玩家(第2顆) ${cell.nick}, 開始在${cell.server}玩, 座標:(${cell.x},${cell.y}) ip: ${cell.ip}`);
                     }
                 }
@@ -134,8 +136,8 @@ wss.on('connection', (ws) => {
 
     ws.on('close', () => {
         console.log('Client disconnected');
-        if(ip!="undefined"){
-            logToDiscord(`<t:${new Date().getTime().toString().slice(0,-3)}:R>🥀舊版玩家(${ip})已離開伺服器 暱稱: "${nick}" and "${nick2}"`);
+        if(typeof sessionip !== 'undefined'){
+            logToDiscord(`<t:${new Date().getTime().toString().slice(0,-3)}:R>🥀舊版玩家(${ip})已離開伺服器`);
         }
     });
 });
