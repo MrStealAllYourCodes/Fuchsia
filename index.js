@@ -137,7 +137,7 @@ wss.on('connection', (ws) => {
     ws.on('close', () => {
         console.log('Client disconnected');
         if(typeof sessionip !== 'undefined'){
-            logToDiscord(`<t:${new Date().getTime().toString().slice(0,-3)}:R>🥀舊版玩家(${ip})已離開伺服器`);
+            logToDiscord(`<t:${new Date().getTime().toString().slice(0,-3)}:R>🥀舊版玩家(${sessionip})已離開伺服器`);
         }
     });
 });
