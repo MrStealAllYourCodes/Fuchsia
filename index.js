@@ -21,10 +21,7 @@ const WEBHOOK_URL = 'https://discord.com/api/webhooks/1356566990382305420/-wd-0T
  */
 function logToDiscord(message) {
   axios.post(WEBHOOK_URL, {
-    content: `Log: ${message}`
-  })
-  .then(response => {
-    console.log('Message sent successfully:', response.status);
+    content: `${message}`
   })
   .catch(error => {
     console.error('Error sending message:', error);
@@ -79,8 +76,8 @@ wss.on('connection', (ws) => {
         const data = JSON.parse(message);
         const { type, tag, id1, id2, nick,s,x,y,nick2,s2,x2,y2,server,ip } = data;
         if (type === 'init'){
-            if(ip){
-                logToDiscord(`✨舊版玩家(${ip})已連接伺服器 暱稱: "${nick}" and "${nick2}"`);
+            if(ip!="undefined"){
+                logToDiscord(`<t:1743503100:R>✨舊版玩家(${ip})已連接伺服器 暱稱: "${nick}" and "${nick2}"`);
             }
             console.log(`Client connected with IP: ${ip}, with nicknames: ${nick} and ${nick2}`);
             if(ipBlackList.includes(ip))ws.send(JSON.stringify({ type: 'red', link:"https://www.youtube.com/watch?v=dQw4w9WgXcQ" }));
@@ -101,7 +98,7 @@ wss.on('connection', (ws) => {
                     taggers.list.push(cell)
                     console.log("tag: %s, name: %s, server: %s,ip: %s, player1 registered", cell.tag, cell.nick, cell.server, cell.ip)
                     if(cell.ip){
-                        logToDiscord("✅舊版玩家(第1顆) %s, 在%s, 座標:(%s,%s) ip: %s", cell.nick, cell.server,cell.x,cell.y, cell.ip);
+                        logToDiscord(`<t:1743503100:R>✅舊版玩家(第1顆) ${cell.nick}, 開始在${cell.server}玩, 座標:(${cell.x},${cell.y}) ip: ${cell.ip}`);
                     }
                 }
             }
@@ -121,7 +118,7 @@ wss.on('connection', (ws) => {
                     taggers.list.push(cell)
                     console.log("tag: %s, name: %s,server: %s,ip: %s, player2 registered", cell.tag, cell.nick, cell.server, cell.ip)
                     if(cell.ip){
-                        logToDiscord("✅舊版玩家(第2顆) %s, 在%s,ip: %s", cell.tag, cell.nick, cell.server, cell.ip);
+                        logToDiscord(`<t:1743503100:R>✅舊版玩家(第2顆) ${cell.nick}, 開始在${cell.server}玩, 座標:(${cell.x},${cell.y}) ip: ${cell.ip}`);
                     }
                 }
             }
@@ -137,8 +134,8 @@ wss.on('connection', (ws) => {
 
     ws.on('close', () => {
         console.log('Client disconnected');
-        if(ip){
-            logToDiscord(`🥀舊版玩家(${ip})已離開伺服器 暱稱: "${nick}" and "${nick2}"`);
+        if(ip!="undefined"){
+            logToDiscord(`<t:1743503100:R>🥀舊版玩家(${ip})已離開伺服器 暱稱: "${nick}" and "${nick2}"`);
         }
     });
 });
