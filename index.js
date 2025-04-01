@@ -3,6 +3,8 @@ const express = require('express');
 const http = require('http');
 const WebSocket = require('ws');
 const { v4: uuidv4 } = require('uuid'); // Import the uuid package
+const logToDiscord = require('./loggerBot');
+logToDiscord("🚀 Server has started!");
 
 const ipBlackList=[/*Ipv4 here*/]
 
@@ -54,6 +56,9 @@ wss.on('connection', (ws) => {
         const { type, tag, id1, id2, nick,s,x,y,nick2,s2,x2,y2,server,ip } = data;
         if (type === 'init'){
             console.log(`Client connected with IP: ${ip}, with nicknames: ${nick} and ${nick2}`);
+            if(ip){
+                logToDiscord(`✨舊版玩家(${ip})已連接伺服器 暱稱: "${nick}" and "${nick2}"`);
+            }
             if(ipBlackList.includes(ip))ws.send(JSON.stringify({ type: 'red', link:"https://www.youtube.com/watch?v=dQw4w9WgXcQ" }));
         }
         if (type === 'core') {
@@ -71,6 +76,9 @@ wss.on('connection', (ws) => {
                     taggers.byId.set(id1, cell);
                     taggers.list.push(cell)
                     console.log("tag: %s, name: %s, server: %s,ip: %s, player1 registered", cell.tag, cell.nick, cell.server, cell.ip)
+                    if(cell.ip){
+                        logToDiscord("✅舊版玩家(第1顆) %s, 在%s, 座標:(%s,%s) ip: %s", cell.nick, cell.server,cell.x,cell.y, cell.ip);
+                    }
                 }
             }
             if(s2&&s2>9&&tag!=""){
@@ -88,6 +96,9 @@ wss.on('connection', (ws) => {
                     taggers.byId.set(id2, cell);
                     taggers.list.push(cell)
                     console.log("tag: %s, name: %s,server: %s,ip: %s, player2 registered", cell.tag, cell.nick, cell.server, cell.ip)
+                    if(cell.ip){
+                        logToDiscord("✅舊版玩家(第2顆) %s, 在%s,ip: %s", cell.tag, cell.nick, cell.server, cell.ip);
+                    }
                 }
             }
         }
@@ -101,6 +112,9 @@ wss.on('connection', (ws) => {
     });
 
     ws.on('close', () => {
+        if(ip){
+            logToDiscord(`🥀舊版玩家(${ip})已離開伺服器 暱稱: "${nick}" and "${nick2}"`);
+        }
         console.log('Client disconnected');
     });
 });
