@@ -1,24 +1,22 @@
 require('dotenv').config();
-const { Client, GatewayIntentBits } = require('discord.js');
+const axios = require('axios');
 
-const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages] });
+const WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;
 
-client.once('ready', () => {
-    console.log(`Logged in as ${client.user.tag}`);
-});
-
+// Function to log messages to Discord using Webhook
 async function logToDiscord(message) {
-    const channel = await client.channels.fetch(process.env.CHANNEL_ID);
-    if (channel) {
-        channel.send(message);
+    if (!WEBHOOK_URL) {
+        console.error("❌ Webhook URL is not set!");
+        return;
+    }
+
+    try {
+        await axios.post(WEBHOOK_URL, {
+            content: `📜 Log: ${message}`
+        });
+    } catch (error) {
+        console.error("❌ Failed to send log to Discord:", error);
     }
 }
-
-client.login(process.env.DISCORD_TOKEN);
-
-// Example: Logging a message from your server
-process.on('uncaughtException', (err) => {
-    logToDiscord(`Server Error: ${err.message}`);
-});
 
 module.exports = logToDiscord;
