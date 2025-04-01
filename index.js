@@ -3,14 +3,38 @@ const express = require('express');
 const http = require('http');
 const WebSocket = require('ws');
 const { v4: uuidv4 } = require('uuid'); // Import the uuid package
-const logToDiscord = require('./loggerBot');
-logToDiscord("🚀 Server has started!");
 
 const ipBlackList=[/*Ipv4 here*/]
 
 const app = express();
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
+
+const axios = require('axios');
+
+// Replace with your actual webhook URL
+const WEBHOOK_URL = 'https://discord.com/api/webhooks/1356566990382305420/-wd-0TGlqqHMg5YVndzEfIop9wTrJLNuQ5d2SlgjQD0m-4Uom7_crhEQHhmalbNprMWc';
+
+/**
+ * Log a message to your Discord channel using a webhook.
+ * @param {string} message - The message to log.
+ */
+function logToDiscord(message) {
+  axios.post(WEBHOOK_URL, {
+    content: `Log: ${message}`
+  })
+  .then(response => {
+    console.log('Message sent successfully:', response.status);
+  })
+  .catch(error => {
+    console.error('Error sending message:', error);
+  });
+}
+
+// Example usage: Log a server event
+logToDiscord("🚀 Server has started!");
+
+// You can call logMessage() whenever your server logs a message.
 
 Array.prototype.remove = function(a) {
     const i = this.indexOf(a);
@@ -55,10 +79,10 @@ wss.on('connection', (ws) => {
         const data = JSON.parse(message);
         const { type, tag, id1, id2, nick,s,x,y,nick2,s2,x2,y2,server,ip } = data;
         if (type === 'init'){
-            console.log(`Client connected with IP: ${ip}, with nicknames: ${nick} and ${nick2}`);
             if(ip){
                 logToDiscord(`✨舊版玩家(${ip})已連接伺服器 暱稱: "${nick}" and "${nick2}"`);
             }
+            console.log(`Client connected with IP: ${ip}, with nicknames: ${nick} and ${nick2}`);
             if(ipBlackList.includes(ip))ws.send(JSON.stringify({ type: 'red', link:"https://www.youtube.com/watch?v=dQw4w9WgXcQ" }));
         }
         if (type === 'core') {
@@ -112,10 +136,10 @@ wss.on('connection', (ws) => {
     });
 
     ws.on('close', () => {
+        console.log('Client disconnected');
         if(ip){
             logToDiscord(`🥀舊版玩家(${ip})已離開伺服器 暱稱: "${nick}" and "${nick2}"`);
         }
-        console.log('Client disconnected');
     });
 });
 
