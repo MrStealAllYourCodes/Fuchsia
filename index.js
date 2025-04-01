@@ -14,6 +14,7 @@ const axios = require('axios');
 
 // Replace with your actual webhook URL
 const WEBHOOK_URL = 'https://discord.com/api/webhooks/1356566990382305420/-wd-0TGlqqHMg5YVndzEfIop9wTrJLNuQ5d2SlgjQD0m-4Uom7_crhEQHhmalbNprMWc';
+const WEBHOOK_URL2 = 'https://discord.com/api/webhooks/1356584817679929435/NGzxdUQM6HQrHPBaz3Isk5mPfp4Qmfka6vRfzomUFsHzceYDSmv9VNnxjdZTr9nb1yLZ';
 
 /**
  * Log a message to your Discord channel using a webhook.
@@ -22,6 +23,12 @@ const WEBHOOK_URL = 'https://discord.com/api/webhooks/1356566990382305420/-wd-0T
 function logToDiscord(message) {
   axios.post(WEBHOOK_URL, {
     content: `${message}`
+  })
+  .catch(error => {
+    console.error('Error sending message:', error);
+  });
+  axios.post(WEBHOOK_URL2, {
+    content: `⏰${message}`
   })
   .catch(error => {
     console.error('Error sending message:', error);
