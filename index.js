@@ -15,7 +15,6 @@ const axios = require('axios');
 // Replace with your actual webhook URL
 const WEBHOOK_URL = 'https://discord.com/api/webhooks/1356566990382305420/-wd-0TGlqqHMg5YVndzEfIop9wTrJLNuQ5d2SlgjQD0m-4Uom7_crhEQHhmalbNprMWc';
 const WEBHOOK_URL2 = 'https://discord.com/api/webhooks/1356584817679929435/NGzxdUQM6HQrHPBaz3Isk5mPfp4Qmfka6vRfzomUFsHzceYDSmv9VNnxjdZTr9nb1yLZ';
-const WEBHOOK_URL3 = 'https://discord.com/api/webhooks/1356883794082271305/XtV9IjCdovE7lWuC55XLsmMV92dIV-loEjGzzJxfdJj-8QKnGpMrhUh9aIFgL_UNAtzU';
 /**
  * Log a message to your Discord channel using a webhook.
  * @param {string} message - The message to log.
@@ -29,12 +28,6 @@ function logToDiscord(message) {
   });
   axios.post(WEBHOOK_URL2, {
     content: `⏰${message}`
-  })
-  .catch(error => {
-    console.error('Error sending message:', error);
-  });
-  axios.post(WEBHOOK_URL3, {
-    content: `🔔${message}`
   })
   .catch(error => {
     console.error('Error sending message:', error);
@@ -163,3 +156,4 @@ wss.on('connection', (ws) => {
 server.listen(30180, () => {
     console.log('Server is listening on port 30180');
 });
+
