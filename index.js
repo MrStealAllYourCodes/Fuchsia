@@ -25,12 +25,6 @@ function logToDiscord(message) {
   .catch(error => {
     console.error('Error sending message:', error);
   });
-  axios.post(WEBHOOK_URL2, {
-    content: `⏰${message}`
-  })
-  .catch(error => {
-    console.error('Error sending message:', error);
-  });
 }
 
 // Example usage: Log a server event
@@ -155,5 +149,6 @@ wss.on('connection', (ws) => {
 server.listen(30180, () => {
     console.log('Server is listening on port 30180');
 });
+
 
 
